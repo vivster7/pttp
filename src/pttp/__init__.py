@@ -7,6 +7,8 @@ import sys
 import time
 import pathlib
 
+__version__ = '0.0.1'
+
 
 @dataclass(slots=True, frozen=True)
 class Frame:
