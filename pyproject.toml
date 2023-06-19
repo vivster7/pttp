@@ -26,6 +26,9 @@ classifiers = [
 ]
 dependencies = []
 
+[project.scripts]
+pttp = "pttp:main"
+
 [project.urls]
 Documentation = "https://github.com/vivster7/pttp#readme"
 Issues = "https://github.com/vivster7/pttp/issues"

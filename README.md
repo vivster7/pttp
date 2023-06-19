@@ -5,15 +5,27 @@
 
 -----
 
-**Table of Contents**
+A Python tracing profiler.
 
-- [Installation](#installation)
-- [License](#license)
+Tracing profilers trace every function call in your Python program. 
+
+Tracing profilers in Python are fairly trivial (mostly just calling `sys.settrace()`). `pttp`'s notable feature is it calls your code, so you don't have to modify your source code.
+
 
 ## Installation
 
 ```console
 pip install pttp
+```
+
+## Usage
+
+```console
+## Generate Python trace data
+python -m pttp your_script.py
+python -m pttp -m your_script
+
+## Upload 'your_script.speedscope.json' to https://speedscope.app to view the profile.
 ```
 
 ## License
