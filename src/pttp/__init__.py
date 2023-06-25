@@ -145,9 +145,13 @@ def write_pttp_profile_to_file(mainpyfile: str):
 
 
 _usage = """\
-usage: pttp.py [-m module | pyfile]
+usage: pttp.py [OPTIONS] [-m module | pyfile]
 
 Trace the Python program given by pyfile or -m module.
+
+Options:
+  --filter TEXT     Only include frames whose filenames contain this string.
+  -h, --help        Show this help message and exit.
 """
 
 
