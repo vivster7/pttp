@@ -64,6 +64,9 @@ class EnhancedJSONEncoder(json.JSONEncoder):
 frames: dict[str, tuple[int, Frame]] = {}
 events: list[FrameEvent] = []
 
+# filters used to filter out frames by matching filenames.
+filters: list[str] = []
+
 
 profiling_offset = 0
 waiting_to_enter_mainpyfile = True
@@ -83,6 +86,9 @@ def profilefunc(frame: FrameType, event: str, arg: Any) -> object:
             return
 
         if event != 'call' and event != 'return':
+            return
+
+        if len(filters) > 0 and not any(f in filename for f in filters):
             return
 
         if event == 'call':
@@ -105,14 +111,17 @@ def profilefunc(frame: FrameType, event: str, arg: Any) -> object:
         profiling_offset += (time.perf_counter() - t)
 
 
-def write_profile_to_file(mainpyfile: str):
+def write_pttp_profile_to_file(mainpyfile: str):
     if len(events) <= 1:
         return
 
     sys.setprofile(None)
-    # Drop last event, it's this function.
-    events.pop()
-    frames.popitem()
+    # Drop last event if it's this function.
+    if frames:
+        _, lastframe = next(reversed(frames.values()))
+        if lastframe.name == 'write_pttp_profile_to_file':
+            events.pop()
+            frames.popitem()
 
     filename = pathlib.Path(mainpyfile).with_suffix('.speedscope.json')
     profile = EventedProfile(
@@ -147,7 +156,7 @@ def main():
 
     import getopt
 
-    opts, args = getopt.getopt(sys.argv[1:], 'mh', ['help'])
+    opts, args = getopt.getopt(sys.argv[1:], 'mhf=', ['help', 'filter='])
 
     if not args:
         print(_usage)
@@ -156,6 +165,10 @@ def main():
     if any(opt in ['-h', '--help'] for opt, optarg in opts):
         print(_usage)
         sys.exit()
+
+    if any(opt in ['-f', '--filter'] for opt, optarg in opts):
+        global filters
+        filters = [optarg for opt, optarg in opts if opt in ['-f', '--filter']]
 
     # Hide "pttp.py" and options from argument list
     sys.argv[:] = args
@@ -170,4 +183,4 @@ def main():
         else:
             runpy.run_path(mainpyfile, run_name='__main__')
     finally:
-        write_profile_to_file(mainpyfile)
+        write_pttp_profile_to_file(mainpyfile)
