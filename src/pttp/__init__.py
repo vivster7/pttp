@@ -7,7 +7,7 @@ import sys
 import time
 import pathlib
 
-__version__ = '0.0.2'
+__version__ = '0.0.3'
 
 
 @dataclass(slots=True, frozen=True)
